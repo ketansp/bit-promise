@@ -1,0 +1,22 @@
+{
+  "name": "@ketansp/promise",
+  "version": "0.0.1",
+  "description": "A very rudimentary implementation of promise class",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ketansp/promise.git"
+  },
+  "keywords": [
+    "Promise"
+  ],
+  "author": "Ketan Patil <100.percent.ketan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ketansp/promise/issues"
+  },
+  "homepage": "https://github.com/ketansp/promise#readme"
+}
