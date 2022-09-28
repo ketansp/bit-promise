@@ -7,15 +7,23 @@ class Promise {
    */
   constructor(asyncFunctionToBeExecuted){
     this.asyncFunctionToBeExecuted = asyncFunctionToBeExecuted;
-    this.subsequentSuccessFunctions = [];
-    this.subsequentErrorFunctions = [];
+    this.subsequentFunctionsRegistry = [];
+
+    const SUBSEQUENTFUNCTIONTYPES = {
+      SUCCESS: 'SUCCESS',
+      ERROR: 'ERROR',
+      FINAL: 'FINAL'
+    };
 
     /**
      * read .then as a function which registers subsequent success handler function
      * @param {Function} subsequentSuccessFunction 
      */
     this.then = (subsequentSuccessFunction)=>{
-      this.subsequentSuccessFunctions.push(subsequentSuccessFunction);
+      this.subsequentFunctionsRegistry.push({
+          type: SUBSEQUENTFUNCTIONTYPES.SUCCESS,
+          subsequentFunction : subsequentSuccessFunction
+      });
       return this;
     }
 
@@ -24,26 +32,49 @@ class Promise {
      * @param {Function} subsequentErrorFunction 
      */
     this.catch = (subsequentErrorFunction)=>{
-      this.subsequentErrorFunctions.push(subsequentErrorFunction);
+      this.subsequentFunctionsRegistry.push({
+          type: SUBSEQUENTFUNCTIONTYPES.ERROR,
+          subsequentFunction : subsequentErrorFunction
+      });
+      return this;
+    }
+
+    /**
+     * read .finally as a function which registers subsequent final handler function
+     * @param {Function} subsequentFinalFunction 
+     */
+    this.finally = (subsequentFinalFunction)=>{
+      this.subsequentFunctionsRegistry.push({
+          type: SUBSEQUENTFUNCTIONTYPES.FINAL,
+          subsequentFunction : subsequentFinalFunction
+      });
       return this;
     }
 
     /**
      * This is what is trigger all the subsequent success function.
      * The thumb rule is that, if we get another promise in subsequent function, 
-     * we will break current chain to move it to new promise's subsequentSuccessFunctions array.
+     * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
      */
     let handleSuccess = () => {
       let dataToBePassedOn = [...arguments];
-      if(this.subsequentSuccessFunctions.length > 0){
+      if(this.subsequentFunctionsRegistry.length > 0){
         let targetPromise;
-        for (let index = 0; index < this.subsequentSuccessFunctions.length; index++) {
+        for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
           if(targetPromise){
-            targetPromise.then(this.subsequentSuccessFunctions[index])
+            if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+              targetPromise.then(this.subsequentFunctionsRegistry[index].subsequentFunction)
+            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.ERROR){
+              targetPromise.catch(this.subsequentFunctionsRegistry[index].subsequentFunction)
+            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.FINAL){
+              targetPromise.finally(this.subsequentFunctionsRegistry[index].subsequentFunction)
+            } 
           } else {
-            let returnedData = this.subsequentSuccessFunctions[index].apply(null, dataToBePassedOn);
-            if(returnedData instanceof Promise){
-              targetPromise = returnedData;
+            if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.ERROR){
+              let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, dataToBePassedOn);
+              if(returnedData instanceof Promise){
+                targetPromise = returnedData;
+              }
             }
           }
         }
@@ -53,24 +84,62 @@ class Promise {
     /**
      * This is what is trigger all the subsequent error function.
      * The thumb rule is that, if we get another promise in subsequent error function, 
-     * we will break current chain to move it to new promise's subsequentSuccessFunctions array.
+     * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
      */
     let handleError = () => {
       let dataToBePassedOn = [...arguments];
-      if(this.subsequentErrorFunctions.length > 0){
+      if(this.subsequentFunctionsRegistry.length > 0){
         let targetPromise;
-        for (let index = 0; index < this.subsequentErrorFunctions.length; index++) {
+        for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
           if(targetPromise){
-            targetPromise.catch(this.subsequentErrorFunctions[index])
+            if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+              targetPromise.then(this.subsequentFunctionsRegistry[index].subsequentFunction)
+            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.ERROR){
+              targetPromise.catch(this.subsequentFunctionsRegistry[index].subsequentFunction)
+            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.FINAL){
+              targetPromise.finally(this.subsequentFunctionsRegistry[index].subsequentFunction)
+            } 
           } else {
-            let returnedData = this.subsequentErrorFunctions[index].apply(null, dataToBePassedOn);
-            if(returnedData instanceof Promise){
-              targetPromise = returnedData;
+            if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+              let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, dataToBePassedOn);
+              if(returnedData instanceof Promise){
+                targetPromise = returnedData;
+              }
             }
           }
         }
       }
     }
+
+    // /**
+    //  * This is what is trigger all the subsequent error function.
+    //  * The thumb rule is that, if we get another promise in subsequent final function, 
+    //  * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
+    //  */
+    // let handleFinal = () => {
+    //   let dataToBePassedOn = [...arguments];
+    //   if(this.subsequentFunctionsRegistry.length > 0){
+    //     let targetPromise;
+    //     for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
+    //       if(targetPromise){
+    //         if(this.subsequentFunctionsRegistry[index].type = SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+    //           targetPromise.then(this.subsequentFunctionsRegistry[index].subsequentFunction)
+    //         } else if(this.subsequentFunctionsRegistry[index].type = SUBSEQUENTFUNCTIONTYPES.ERROR){
+    //           targetPromise.catch(this.subsequentFunctionsRegistry[index].subsequentFunction)
+    //         } else if(this.subsequentFunctionsRegistry[index].type = SUBSEQUENTFUNCTIONTYPES.FINAL){
+    //           targetPromise.finally(this.subsequentFunctionsRegistry[index].subsequentFunction)
+    //         } 
+    //       } else {
+    //         if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.ERROR){
+    //           let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, dataToBePassedOn);
+    //           if(returnedData instanceof Promise){
+    //             targetPromise = returnedData;
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     /**
      * Lets now execute the main function which we have been waiting for. 
