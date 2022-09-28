@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ketansp/promise.git"
+    "url": "git+https://github.com/ketansp/bit-promise.git"
   },
   "keywords": [
     "Promise"
@@ -16,7 +16,7 @@
   "author": "Ketan Patil <100.percent.ketan@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ketansp/promise/issues"
+    "url": "https://github.com/ketansp/bit-promise/issues"
   },
-  "homepage": "https://github.com/ketansp/promise#readme"
+  "homepage": "https://github.com/ketansp/bit-promise#readme"
 }
