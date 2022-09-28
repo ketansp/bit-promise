@@ -1,11 +1,11 @@
 class Promise {
-  
+
   /**
    * This is the asynchronous function which we intend to execute synchronously
    * the function should have successHandler and errorHandler as parameters of type Function
    * @param {Function} asyncFunctionToBeExecuted 
    */
-  constructor(asyncFunctionToBeExecuted){
+  constructor(asyncFunctionToBeExecuted) {
     this.asyncFunctionToBeExecuted = asyncFunctionToBeExecuted;
     this.subsequentFunctionsRegistry = [];
 
@@ -19,10 +19,10 @@ class Promise {
      * read .then as a function which registers subsequent success handler function
      * @param {Function} subsequentSuccessFunction 
      */
-    this.then = (subsequentSuccessFunction)=>{
+    this.then = (subsequentSuccessFunction) => {
       this.subsequentFunctionsRegistry.push({
-          type: SUBSEQUENTFUNCTIONTYPES.SUCCESS,
-          subsequentFunction : subsequentSuccessFunction
+        type: SUBSEQUENTFUNCTIONTYPES.SUCCESS,
+        subsequentFunction: subsequentSuccessFunction
       });
       return this;
     }
@@ -31,10 +31,10 @@ class Promise {
      * read .catch as a function which registers subsequent error handler function
      * @param {Function} subsequentErrorFunction 
      */
-    this.catch = (subsequentErrorFunction)=>{
+    this.catch = (subsequentErrorFunction) => {
       this.subsequentFunctionsRegistry.push({
-          type: SUBSEQUENTFUNCTIONTYPES.ERROR,
-          subsequentFunction : subsequentErrorFunction
+        type: SUBSEQUENTFUNCTIONTYPES.ERROR,
+        subsequentFunction: subsequentErrorFunction
       });
       return this;
     }
@@ -43,10 +43,10 @@ class Promise {
      * read .finally as a function which registers subsequent final handler function
      * @param {Function} subsequentFinalFunction 
      */
-    this.finally = (subsequentFinalFunction)=>{
+    this.finally = (subsequentFinalFunction) => {
       this.subsequentFunctionsRegistry.push({
-          type: SUBSEQUENTFUNCTIONTYPES.FINAL,
-          subsequentFunction : subsequentFinalFunction
+        type: SUBSEQUENTFUNCTIONTYPES.FINAL,
+        subsequentFunction: subsequentFinalFunction
       });
       return this;
     }
@@ -58,21 +58,21 @@ class Promise {
      * alias "resolve"
      */
     let handleSuccess = (data) => {
-      if(this.subsequentFunctionsRegistry.length > 0){
+      if (this.subsequentFunctionsRegistry.length > 0) {
         let targetPromise;
         for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
-          if(targetPromise){
-            if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+          if (targetPromise) {
+            if (this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.SUCCESS) {
               targetPromise.then(this.subsequentFunctionsRegistry[index].subsequentFunction)
-            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.ERROR){
+            } else if (this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.ERROR) {
               targetPromise.catch(this.subsequentFunctionsRegistry[index].subsequentFunction)
-            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.FINAL){
+            } else if (this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.FINAL) {
               targetPromise.finally(this.subsequentFunctionsRegistry[index].subsequentFunction)
-            } 
+            }
           } else {
-            if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.ERROR){
+            if (this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.ERROR) {
               let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, [data]);
-              if(returnedData instanceof Promise){
+              if (returnedData instanceof Promise) {
                 targetPromise = returnedData;
               }
             }
@@ -88,21 +88,21 @@ class Promise {
      * alias "reject"
      */
     let handleError = (error) => {
-      if(this.subsequentFunctionsRegistry.length > 0){
+      if (this.subsequentFunctionsRegistry.length > 0) {
         let targetPromise;
         for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
-          if(targetPromise){
-            if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+          if (targetPromise) {
+            if (this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.SUCCESS) {
               targetPromise.then(this.subsequentFunctionsRegistry[index].subsequentFunction)
-            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.ERROR){
+            } else if (this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.ERROR) {
               targetPromise.catch(this.subsequentFunctionsRegistry[index].subsequentFunction)
-            } else if(this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.FINAL){
+            } else if (this.subsequentFunctionsRegistry[index].type === SUBSEQUENTFUNCTIONTYPES.FINAL) {
               targetPromise.finally(this.subsequentFunctionsRegistry[index].subsequentFunction)
-            } 
+            }
           } else {
-            if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.SUCCESS){
+            if (this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.SUCCESS) {
               let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, [error]);
-              if(returnedData instanceof Promise){
+              if (returnedData instanceof Promise) {
                 targetPromise = returnedData;
               }
             }
