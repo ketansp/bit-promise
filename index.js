@@ -52,9 +52,10 @@ class Promise {
     }
 
     /**
-     * This is what is trigger all the subsequent success function.
+     * This is what will trigger all the subsequent success function.
      * The thumb rule is that, if we get another promise in subsequent function, 
      * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
+     * alias "resolve"
      */
     let handleSuccess = (data) => {
       if(this.subsequentFunctionsRegistry.length > 0){
@@ -81,9 +82,10 @@ class Promise {
     }
 
     /**
-     * This is what is trigger all the subsequent error function.
+     * This is what will trigger the subsequent error function.
      * The thumb rule is that, if we get another promise in subsequent error function, 
      * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
+     * alias "reject"
      */
     let handleError = (error) => {
       if(this.subsequentFunctionsRegistry.length > 0){
@@ -108,36 +110,6 @@ class Promise {
         }
       }
     }
-
-    // /**
-    //  * This is what is trigger all the subsequent error function.
-    //  * The thumb rule is that, if we get another promise in subsequent final function, 
-    //  * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
-    //  */
-    // let handleFinal = () => {
-    //   let dataToBePassedOn = [...arguments];
-    //   if(this.subsequentFunctionsRegistry.length > 0){
-    //     let targetPromise;
-    //     for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
-    //       if(targetPromise){
-    //         if(this.subsequentFunctionsRegistry[index].type = SUBSEQUENTFUNCTIONTYPES.SUCCESS){
-    //           targetPromise.then(this.subsequentFunctionsRegistry[index].subsequentFunction)
-    //         } else if(this.subsequentFunctionsRegistry[index].type = SUBSEQUENTFUNCTIONTYPES.ERROR){
-    //           targetPromise.catch(this.subsequentFunctionsRegistry[index].subsequentFunction)
-    //         } else if(this.subsequentFunctionsRegistry[index].type = SUBSEQUENTFUNCTIONTYPES.FINAL){
-    //           targetPromise.finally(this.subsequentFunctionsRegistry[index].subsequentFunction)
-    //         } 
-    //       } else {
-    //         if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.ERROR){
-    //           let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, dataToBePassedOn);
-    //           if(returnedData instanceof Promise){
-    //             targetPromise = returnedData;
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
 
     /**
      * Lets now execute the main function which we have been waiting for. 
