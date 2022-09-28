@@ -56,8 +56,7 @@ class Promise {
      * The thumb rule is that, if we get another promise in subsequent function, 
      * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
      */
-    let handleSuccess = () => {
-      let dataToBePassedOn = [...arguments];
+    let handleSuccess = (data) => {
       if(this.subsequentFunctionsRegistry.length > 0){
         let targetPromise;
         for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
@@ -71,7 +70,7 @@ class Promise {
             } 
           } else {
             if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.ERROR){
-              let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, dataToBePassedOn);
+              let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, [data]);
               if(returnedData instanceof Promise){
                 targetPromise = returnedData;
               }
@@ -86,8 +85,7 @@ class Promise {
      * The thumb rule is that, if we get another promise in subsequent error function, 
      * we will break current chain to move it to new promise's subsequentFunctionsRegistry array.
      */
-    let handleError = () => {
-      let dataToBePassedOn = [...arguments];
+    let handleError = (error) => {
       if(this.subsequentFunctionsRegistry.length > 0){
         let targetPromise;
         for (let index = 0; index < this.subsequentFunctionsRegistry.length; index++) {
@@ -101,7 +99,7 @@ class Promise {
             } 
           } else {
             if(this.subsequentFunctionsRegistry[index].type !== SUBSEQUENTFUNCTIONTYPES.SUCCESS){
-              let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, dataToBePassedOn);
+              let returnedData = this.subsequentFunctionsRegistry[index].subsequentFunction.apply(null, [error]);
               if(returnedData instanceof Promise){
                 targetPromise = returnedData;
               }
