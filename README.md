@@ -7,8 +7,8 @@ Features
 - supports `.then`, `.catch` and `.finally` APIs of the promise class.
 
 To-do
-[ ] support for typescript
-[ ] support for concurrent execution using `Promise.all`
+- [ ] support for typescript
+- [ ] support for concurrent execution using `Promise.all`
 
 Installation
 ```
