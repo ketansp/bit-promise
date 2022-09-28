@@ -1,6 +1,7 @@
-const { Promise } = require("./index");
+const { Promise } = require("../index");
 
-let p = new Promise(function(resolve, reject){
+console.log('This test script checks if the Promise class is able to pass on error object to the .catch block');
+new Promise(function(resolve, reject){
     setTimeout(function(){
         console.log('1st block');
         return resolve();
@@ -17,8 +18,7 @@ let p = new Promise(function(resolve, reject){
 .then(function(){
   return new Promise(function(resolve, reject){
       setTimeout(function(){
-          console.log('3rd block');
-          return resolve();
+          return reject(new Error('This is a custom error which happened at ' + new Date()));
       }, Math.random() * 1000);
   });
 })
@@ -37,4 +37,11 @@ let p = new Promise(function(resolve, reject){
           return resolve();
       }, Math.random() * 1000);
   });
-});
+})
+.catch(function(err){
+	console.error('Oh no! There is an error caught by the catch block');
+    console.error(err);
+})
+.finally(function(){
+    console.log('This is a finally block and it must be printed every time!');   
+})
