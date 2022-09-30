@@ -19,11 +19,19 @@ class Promise {
      * read .then as a function which registers subsequent success handler function
      * @param {Function} subsequentSuccessFunction 
      */
-    this.then = (subsequentSuccessFunction) => {
-      this.subsequentFunctionsRegistry.push({
-        type: SUBSEQUENTFUNCTIONTYPES.SUCCESS,
-        subsequentFunction: subsequentSuccessFunction
-      });
+    this.then = (subsequentSuccessFunction, subsequentErrorFunction) => {
+      if(subsequentSuccessFunction && typeof subsequentSuccessFunction === 'function'){
+        this.subsequentFunctionsRegistry.push({
+          type: SUBSEQUENTFUNCTIONTYPES.SUCCESS,
+          subsequentFunction: subsequentSuccessFunction
+        });
+      }
+      if(subsequentErrorFunction && typeof subsequentErrorFunction === 'function'){
+        this.subsequentFunctionsRegistry.push({
+          type: SUBSEQUENTFUNCTIONTYPES.ERROR,
+          subsequentFunction: subsequentErrorFunction
+        });
+      }
       return this;
     }
 
@@ -32,10 +40,12 @@ class Promise {
      * @param {Function} subsequentErrorFunction 
      */
     this.catch = (subsequentErrorFunction) => {
-      this.subsequentFunctionsRegistry.push({
-        type: SUBSEQUENTFUNCTIONTYPES.ERROR,
-        subsequentFunction: subsequentErrorFunction
-      });
+      if(subsequentErrorFunction && typeof subsequentErrorFunction === 'function'){
+        this.subsequentFunctionsRegistry.push({
+          type: SUBSEQUENTFUNCTIONTYPES.ERROR,
+          subsequentFunction: subsequentErrorFunction
+        });
+      }
       return this;
     }
 
