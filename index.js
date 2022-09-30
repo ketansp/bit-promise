@@ -128,6 +128,28 @@ class Promise {
     this.asyncFunctionToBeExecuted.apply(null, [handleSuccess, handleError]);
 
   }
+
+  /**
+   * For promising simple success blocks
+   * @param {*} data 
+   * @returns Promise
+   */
+  static resolve = (data)=>{
+    return new Promise(function(resolve, reject){
+      return resolve(data);
+    })
+  }
+
+  /**
+   * For promising simple error blocks
+   * @param {*} error 
+   * @returns Promise 
+   */
+  static reject = (error)=>{
+    return new Promise(function(resolve, reject){
+      return reject(error);
+    })
+  }
 }
 
 module.exports = {
